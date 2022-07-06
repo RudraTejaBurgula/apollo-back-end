@@ -5,6 +5,7 @@ const customerModel = require('./Models/customer.model');
 const admindB = require('./Models/admin.model')
 var cors = require('cors')
 var twilio = require('twilio');
+const port = process.env.PORT || 5000
 //const { response } = require('express');
 
 
@@ -18,7 +19,14 @@ app.use(cors())
 
 //Mongo set-up
 const uri = process.env.ATLAS_URI;
-mongoose.connect(uri);
+const retryConnect = () => {
+
+    mongoose.connect(uri).then(() => console.log('Db connected')).catch((err) => {
+        console.log(err)
+        setTimeout(retryConnect, 3000)
+    })
+}
+retryConnect()
 const connection = mongoose.connection;
 connection.on('open', () => {
     console.log('Mongoose connected!')
@@ -93,4 +101,4 @@ app.post('/data', async (req, res) => {
 
 })
 app.use('/admin', route)
-app.listen(5000, () => console.log("Listening...!"))
+app.listen(port, () => console.log("Listening...!"))
