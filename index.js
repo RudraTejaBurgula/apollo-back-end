@@ -6,7 +6,6 @@ const admindB = require('./Models/admin.model')
 var cors = require('cors')
 var twilio = require('twilio');
 const port = process.env.PORT || 5000
-//const { response } = require('express');
 
 
 require('dotenv').config();
@@ -44,7 +43,6 @@ app.get('/', (req, res) => {
 
 app.get('/hospName/:hospName', (request, respsone) => {
     console.log(request.params.hospName)
-    //db.inventory.find( { $and: [ { "date.name": request.params.hospName.trim() }, { "date.isChecked": true } ] } )
     admindB.find({ $and: [{ "date.name": request.params.hospName.toUpperCase() }, { "date.isChecked": true }] }).select({ "hosp_name": 1, "_id": 0 }).exec((err, res) => {
         if (err) {
             respsone.send(err)
@@ -52,27 +50,22 @@ app.get('/hospName/:hospName', (request, respsone) => {
         }
         else {
             respsone.send(res)
-            //response.send(result)
-            console.log(res)
         }
     })
 })
 
 app.get('/spec/:spec', (req, res) => {
-    //console.log("Body is:",req.params.spec)
     admindB.find({ hosp_name: req.params.spec }).select({ "spec_name": 1, "_id": 0 }).exec((err, result) => {
         if (err) {
             res.send(err)
         } else {
             res.send(result)
             console.log(result)
-            //console.log(result)
         }
     })
 })
 
 app.get('/docName/:docName', (req, res) => {
-    //console.log("Body is:",req.params.docName)
     admindB.find({ spec_name: req.params.docName }).select({ "doc_name": 1, "_id": 0 }).exec((err, result) => {
         if (err) {
             res.send(err)
@@ -85,7 +78,6 @@ app.get('/docName/:docName', (req, res) => {
 
 app.get('/sendtext', (req, res) => {
     const { recipient, textmessage } = req.query
-    //console.log(recipient, textmessage)
     client.messages.create({
         body: textmessage,
         to: "+91" + recipient,
